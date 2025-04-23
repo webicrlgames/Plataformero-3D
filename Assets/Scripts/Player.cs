@@ -93,23 +93,16 @@ public class Player : MonoBehaviour
 
     private void HandleMovement()
     {
+
+        Vector3 move = new Vector3(m_moveAmt.x, 0, m_moveAmt.y);
+        move = transform.TransformDirection(move);
+        m_Rigidbody.MovePosition(transform.position + move * WalkSpeed * Time.deltaTime);
+
         
-            Vector3 move = new Vector3(m_moveAmt.x, 0, m_moveAmt.y);
-            move = transform.TransformDirection(move);
-            m_Rigidbody.MovePosition(transform.position + move * WalkSpeed * Time.deltaTime);
 
-        bool jumpPressed = false;
 
-        if (playerNumber == 1)
-            jumpPressed = Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Joystick2Button1);
-        else if (playerNumber == 2)
-            jumpPressed = Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Joystick1Button1);
 
-        if (jumpPressed && Jump)
-        {
-            m_Rigidbody.AddForce(Vector3.up * JumpForce, ForceMode.Impulse);
-            Jump = false;
-        }
+
     }
 
     private void HandleRotation()
@@ -137,5 +130,21 @@ public class Player : MonoBehaviour
         {
             Jump = true;
         }
+    }
+
+    public void OnJump(InputAction.CallbackContext callbackContext) {
+
+        if (callbackContext.performed) {
+
+            Debug.Log("JUMP ");
+
+            if (Jump)
+            {
+                m_Rigidbody.AddForce(Vector3.up * JumpForce, ForceMode.Impulse);
+                Jump = false;
+            }
+        
+    }
+    
     }
 }
