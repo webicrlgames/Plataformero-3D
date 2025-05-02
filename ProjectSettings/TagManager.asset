@@ -6,6 +6,12 @@ TagManager:
   tags:
   - Money
   - Ground
+  - EnemigoX
+  - EnemigoZ
+  - EnemigoY
+  - Wall
+  - Death
+  - Win
   layers:
   - Default
   - TransparentFX

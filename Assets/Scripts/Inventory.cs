@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class Inventory : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class Inventory : MonoBehaviour
     public float DelayInSeconds = 1f;
     public int collectedLifes = 0;
     public TextMeshProUGUI LifesText;
+    public Image victoryImage;
 
     private void Start()
     {
@@ -25,6 +27,15 @@ public class Inventory : MonoBehaviour
     {
         collectedLifes++;
         LifesText.text = collectedLifes.ToString() + "";
+    }
+    public void DeadLifes()
+    {
+        collectedLifes--;
+        LifesText.text = collectedLifes.ToString() + "";
+    }
+    public void Vicotory()
+    {
+        victoryImage.gameObject.SetActive(true);
     }
     IEnumerator UpdateTime()
     {

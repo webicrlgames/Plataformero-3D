@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -5,7 +7,8 @@ using UnityEngine.UIElements;
 public class Player : MonoBehaviour
 {
     private Rigidbody m_Rigidbody;
-
+    private Collider objectCollider;
+    private MeshRenderer objectMeshRenderer;
     private PlayerInput m_playerInput;
 
     public float WalkSpeed = 5;
@@ -22,9 +25,16 @@ public class Player : MonoBehaviour
     private Vector2 m_lookAmt;
 
     public Inventory Inventory;
+    public GameObject CheckPoint;
 
     public int playerNumber = 0;
     private static int playerCount = 0;
+
+    private bool isOnWall = false;
+    public float wallSlideSpeed = 2f;
+    public float normalGravity = -9.81f;
+    public float reducedGravity = -4f;
+    string[] tags = { "Death", "EnemigoX", "EnemigoZ", "EnemigoY" };
 
     public void OnMove(InputAction.CallbackContext ctx)
     {
@@ -36,8 +46,22 @@ public class Player : MonoBehaviour
         m_lookAmt = ctx.ReadValue<Vector2>();
     }
 
+    public void OnJump(InputAction.CallbackContext callbackContext)
+    {
+        if (callbackContext.performed)
+        {
+            if (Jump)
+            {
+                m_Rigidbody.AddForce(Vector3.up * JumpForce, ForceMode.Impulse);
+                Jump = false;
+            }
+        }
+    }
+
     private void Awake()
     {
+        objectCollider = GetComponentInChildren<Collider>();
+        objectMeshRenderer = GetComponentInChildren<MeshRenderer>();
         m_playerInput = GetComponent<PlayerInput>();
         m_Rigidbody = GetComponent<Rigidbody>();
         playerCount++;
@@ -97,12 +121,6 @@ public class Player : MonoBehaviour
         Vector3 move = new Vector3(m_moveAmt.x, 0, m_moveAmt.y);
         move = transform.TransformDirection(move);
         m_Rigidbody.MovePosition(transform.position + move * WalkSpeed * Time.deltaTime);
-
-        
-
-
-
-
     }
 
     private void HandleRotation()
@@ -111,6 +129,19 @@ public class Player : MonoBehaviour
         {
             float rotAmount = m_lookAmt.x * RotateSpeed * Time.deltaTime;
             transform.Rotate(0, rotAmount, 0);
+        }
+    }
+
+    private void HandleWallSlide()
+    {
+        if (isOnWall)
+        {
+            m_Rigidbody.linearVelocity = new Vector3(m_Rigidbody.linearVelocity.x, wallSlideSpeed, m_Rigidbody.linearVelocity.z);
+            m_Rigidbody.useGravity = false;
+        }
+        else
+        {
+            m_Rigidbody.useGravity = true;
         }
     }
 
@@ -130,21 +161,43 @@ public class Player : MonoBehaviour
         {
             Jump = true;
         }
+        if (tags.Contains(collision.gameObject.tag))
+        {
+            StartCoroutine(TemporarilyDisableCollisionAndRender());
+            Inventory.DeadLifes();
+        }
+        if (collision.gameObject.CompareTag("Win"))
+        {
+            Inventory.Vicotory();
+            m_playerInput.enabled = false;
+        }
     }
 
-    public void OnJump(InputAction.CallbackContext callbackContext) {
-
-        if (callbackContext.performed) {
-
-            Debug.Log("JUMP ");
-
-            if (Jump)
-            {
-                m_Rigidbody.AddForce(Vector3.up * JumpForce, ForceMode.Impulse);
-                Jump = false;
-            }
-        
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Wall"))
+        {
+            isOnWall = true;
+            Jump = true;
+        }
     }
-    
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Wall"))
+        {
+            isOnWall = false;
+        }
+    }
+    private IEnumerator TemporarilyDisableCollisionAndRender()
+    {
+        objectCollider.enabled = false;
+        objectMeshRenderer.enabled = false;
+
+        yield return new WaitForSeconds(3f);
+
+        objectCollider.enabled = true;
+        objectMeshRenderer.enabled = true;
+        transform.position = CheckPoint.transform.position;
     }
 }
