@@ -134,7 +134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2b8fd9c3def6f248987e2417f532c6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  WalkSpeed: 10
+  WalkSpeed: 40
   JumpForce: 7
   RotateSpeed: 250
   PlayerCameraPrefab: {fileID: 6376792554185525354, guid: e00b511c345c44b4e9a86a8ae68f880a, type: 3}
@@ -143,8 +143,6 @@ MonoBehaviour:
   CheckPoint: {fileID: 6271814818392135579, guid: c1d2681bd00543a418a33a9fe87fe34f, type: 3}
   playerNumber: 0
   wallSlideSpeed: 2
-  normalGravity: -9.81
-  reducedGravity: -4
 --- !u!54 &7708733845114095003
 Rigidbody:
   m_ObjectHideFlags: 0

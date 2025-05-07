@@ -32,8 +32,6 @@ public class Player : MonoBehaviour
 
     private bool isOnWall = false;
     public float wallSlideSpeed = 2f;
-    public float normalGravity = -9.81f;
-    public float reducedGravity = -4f;
     string[] tags = { "Death", "EnemigoX", "EnemigoZ", "EnemigoY" };
 
     public void OnMove(InputAction.CallbackContext ctx)
@@ -109,7 +107,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         HandleMovement();
         HandleRotation();
